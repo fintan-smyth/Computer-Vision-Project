@@ -14,4 +14,98 @@ Once the model was generated, its constituent files were downloaded and placed i
 
 # Milestone 2
 
-The first task for this milestone is to create a new conda conda environment and install in it the necessary libraries to run the model I have generated.
+The first task for this milestone is to create a new conda conda environment and install in it the necessary libraries to run the model I have generated. I created a new environment called `my_env` and installed in it the libraries `opencv-python`, `tensorflow`, and `ipykernel`. I then exported the list of packages to the file `requirements.txt`.
+
+Insert conda list image
+
+The next task was to check that the model worked. To do so the file `RPS-template.py` was downloaded and placed in the same folder as the model. When run a window popped up with a feed of the webcam, and an output was continuously given with the the model's prediction of what the feed contained, confirming that the model worked.
+
+Insert image of running file.
+
+# Milestone 3
+
+The task for this milestone was to code a simple rock, paper, scissors game where the user's choice is manually input. The game should randomly select the computer's choice, prompt the player to give an input, calculate the winner, and print a statement saying who won. If the player's choice is not one of rock, paper, or scissors the game will reject it and continue to prompt until a valid choice is given. To do this, I first created two functions: `get_computer_choice` and `get_user_choice`.
+
+```python
+import random
+
+def get_computer_choice():
+    options = ['rock', 'paper', 'scissors']
+    computer_choice = random.choice(options)
+    return computer_choice
+
+def get_user_choice():
+    valid = False
+    while valid == False:
+        user_choice = input('What is your choice? \n\n [ROCK] [PAPER] [SCISSORS]\n \n')
+        if user_choice.lower() not in ['rock', 'paper', 'scissors']:
+            print('Sorry, that is not a valid choice. \n')
+        else:
+            valid = True
+    return user_choice
+```
+
+- I imported the `random` module to be able to pick a random item from a list.
+- In the body of the `get_computer_choice` function I created a list `options` containing the strings `'rock'`, `'paper'`, and `'scissors'`.
+    - I then used the `random.choice` method to select a a random item from this list and assigned it ot the variable `computer_choice`.
+    - The function then returns `computer_choice`.
+- In the body of the `get_user_choice` I initialise the variable `valid` as equal to `False`.
+    - I then create a `while` loop that will continue to run as long `valid` remains `False`.
+    - The `input` function is then used to prompt the player and their input is assigned to the variable `user_choice`.
+    - If the input is not either `rock`, `paper`, or `scissors` the statement `Sorry, that is not a valid choice. \n` is printed and the player is again prompted to make a choice.
+    - Otherwise, the variable `valid` is set to `True` causing the loop to exit.
+    - The function then returns `user_choice`
+
+Next I created the function `get_winner` that accepts the arguments `computer_choice` and `user_choice` and returns the winner.
+
+```python
+def get_winner(computer_choice, user_choice):
+    if computer_choice == 'rock':
+        if user_choice.lower() == 'rock':
+            winner = 'draw'
+        elif user_choice.lower() == 'paper':
+            winner = 'user'
+        elif user_choice.lower() == 'scissors':
+            winner = 'comp'
+    elif computer_choice == 'paper':
+        if user_choice.lower() == 'rock':
+            winner = 'comp'
+        elif user_choice.lower() == 'paper':
+            winner = 'draw'
+        elif user_choice.lower() == 'scissors':
+            winner = 'user'
+    elif computer_choice == 'scissors':
+        if user_choice.lower() == 'rock':
+            winner = 'user'
+        elif user_choice.lower() == 'paper':
+            winner = 'comp'
+        elif user_choice.lower() == 'scissors':
+            winner = 'draw'
+    return winner
+```
+
+- In the body of the function `get_winner`a series of `if`/`elif` statements are then used to compare `computer_choice` and `user_choice`.
+- If they are the same, the variable `winner` is set to `'draw'`.
+- If the computer is the winner, the variable `winner` is set to `'comp'`.
+- If the player is the winner, the variable `winner` is set to `'user'`
+- The function then returns `winner`.
+
+Finally, I created the function `play` that will run the game by calling the other functions, then output a statement indicating the winner.
+
+```python
+def play():
+    computer_choice = get_computer_choice()
+    user_choice = get_user_choice()
+    winner = get_winner(computer_choice, user_choice)
+    print(f'\nThe computer chose: {computer_choice}\n')
+    if winner == 'draw':
+        print('It was a draw.')
+    elif winner == 'comp':
+        print('Bad luck, the computer won.')
+    elif winner == 'user':
+        print('Congratulations! The player is the winner.')
+
+if __name__ == '__main__':
+    play()
+```
+
