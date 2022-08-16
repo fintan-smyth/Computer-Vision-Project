@@ -109,3 +109,12 @@ if __name__ == '__main__':
     play()
 ```
 
+- In the body of `play` I call the `get_computer_choice` and `get_user_choice` functions and assign their outputs to `computer_choice` and `user_choice` respectively.
+- The `get_winner` function is then called on `computer_choice` and `user_choice` and the output is assigned to `winner`
+- The statement `'The computer chose {computer_choice}'` is printed to inform the player of the computer's choice.
+- If it was a draw, the statement `'It was a draw.'` is printed and the function ends.
+- If the computer is the winner, the statement `'Bad luck, the computer won.'` is printed and the function ends.
+- If the player is the winner, the statement `'Congratulations! The player is the winner.'` is printed and the function ends.
+- Finally, the `if __name__ == '__main__':` clause is added at the end so that when the file is run the `play` function is called.
+
+# Milestone 4
