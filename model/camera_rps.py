@@ -14,14 +14,21 @@ class rps:
         self.computer_score = 0
         self.user_score = 0
         self.options = ['rock', 'paper', 'scissors']
-        print('\n'*50 + '\nWelcome to my Rock, Paper, Scissors game.\n')
+        print('\n'*100 + '\nWelcome to my Rock, Paper, Scissors game.\n')
         time.sleep(1)
-        print(f'The winner is the first to reach {self.score_limit} points.\n')
+        if self.score_limit == 1:
+            print(f'The winner is the first to reach {self.score_limit} point.\n')
+        else:
+            print(f'The winner is the first to reach {self.score_limit} points.\n')
         time.sleep(1)
 
 
     def get_prediction(self):
         labels = ['rock', 'paper', 'scissors', 'nothing']
+        countstart = False
+        count3 = False
+        count2 = False
+        count1 = False
         start = time.time()
         while True:
             ret, frame = cap.read()
@@ -31,14 +38,18 @@ class rps:
             data[0] = normalized_image
             cv2.imshow('frame', frame)
             runtime = time.time() - start
-            if 1.47 < round(runtime, 2) < 1.55:
+            if 1.5 < round(runtime, 2) and countstart == False:
                 print('\n\nYOUR   CHOICE\n\n     IS\n\nLOCKED    IN:\n\n')
-            elif 2.47 < round(runtime, 2) < 2.55:
-                print('\n333333\n    33\n333333\n    33\n333333\n')    
-            elif 3.47 < round(runtime, 2) < 3.55:
+                countstart = True
+            elif 2.5 < round(runtime, 2) and count3 == False:
+                print('\n333333\n    33\n333333\n    33\n333333\n')
+                count3 = True
+            elif 3.5 < round(runtime, 2) and count2 == False:
                 print('\n222222\n    22\n222222\n22\n222222\n')
-            elif 4.47 < round(runtime, 2) < 4.55:
+                count2 = True
+            elif 4.5 < round(runtime, 2) and count1 == False:
                 print('\n1111\n  11\n  11\n  11\n111111\n')
+                count1 = True
             elif round(runtime, 2) > 5.5:
                 prediction = model.predict(data)
                 print('\nLOCKED!\n')
