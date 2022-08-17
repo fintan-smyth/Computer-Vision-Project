@@ -34,18 +34,18 @@ class rps:
             normalized_image = (image_np.astype(np.float32) / 127.0) - 1
             data[0] = normalized_image
             runtime = time.time() - start
-            if 1.5 < runtime < 2.4 :
+            if 1.5 < runtime < 3 :
                 cv2.putText(frame, "CHOICE LOCKED IN...", (90,390), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0,0,0), 3)
-            elif 3 < runtime < 3.5:
+            elif 3.5 < runtime < 4:
                 cv2.putText(frame, "3", (280,270), cv2.FONT_HERSHEY_SIMPLEX, 3, (0,0,0), 5)
-            elif 4 < runtime < 4.5:
+            elif 4.5 < runtime < 5:
                 cv2.putText(frame, "2", (280,270), cv2.FONT_HERSHEY_SIMPLEX, 3, (0,0,0), 5)
-            elif 5 < runtime < 5.5:
+            elif 5.5 < runtime < 6:
                 cv2.putText(frame, "1", (280,270), cv2.FONT_HERSHEY_SIMPLEX, 3, (0,0,0), 5)
-            elif runtime > 6:
+            elif runtime > 6.5:
                 cv2.putText(frame, "LOCKED!", (180,270), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,180,0), 5)
             cv2.imshow('frame', frame)
-            if runtime > 6.2:
+            if runtime > 6.7:
                 prediction = model.predict(data)
                 break
             if cv2.waitKey(1) & 0xFF == ord('q'):
