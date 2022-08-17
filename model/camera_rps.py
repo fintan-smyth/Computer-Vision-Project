@@ -76,28 +76,35 @@ class rps:
         return user_choice
 
     
+    # def get_winner(self, computer_choice, user_choice):
+    #     if computer_choice == 'rock':
+    #         if user_choice == 'rock':
+    #             winner = 'draw'
+    #         elif user_choice == 'paper':
+    #             winner = 'user'
+    #         elif user_choice == 'scissors':
+    #             winner = 'comp'
+    #     elif computer_choice == 'paper':
+    #         if user_choice == 'rock':
+    #             winner = 'comp'
+    #         elif user_choice == 'paper':
+    #             winner = 'draw'
+    #         elif user_choice == 'scissors':
+    #             winner = 'user'
+    #     elif computer_choice == 'scissors':
+    #         if user_choice == 'rock':
+    #             winner = 'user'
+    #         elif user_choice == 'paper':
+    #             winner = 'comp'
+    #         elif user_choice == 'scissors':
+    #             winner = 'draw'
+    #     return winner
+
     def get_winner(self, computer_choice, user_choice):
-        if computer_choice == 'rock':
-            if user_choice == 'rock':
-                winner = 'draw'
-            elif user_choice == 'paper':
-                winner = 'user'
-            elif user_choice == 'scissors':
-                winner = 'comp'
-        elif computer_choice == 'paper':
-            if user_choice == 'rock':
-                winner = 'comp'
-            elif user_choice == 'paper':
-                winner = 'draw'
-            elif user_choice == 'scissors':
-                winner = 'user'
-        elif computer_choice == 'scissors':
-            if user_choice == 'rock':
-                winner = 'user'
-            elif user_choice == 'paper':
-                winner = 'comp'
-            elif user_choice == 'scissors':
-                winner = 'draw'
+        winner_matrix = np.array([  ['draw', 'user', 'comp'],
+                                    ['comp', 'draw', 'user'],
+                                    ['user', 'comp', 'draw']])
+        winner = winner_matrix[self.options.index(computer_choice),self.options.index(user_choice)]
         return winner
 
     
