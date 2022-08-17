@@ -4,7 +4,6 @@ import numpy as np
 import time
 import random
 model = load_model('keras_model.h5')
-cap = cv2.VideoCapture(0)
 data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
 
 class rps:
@@ -24,7 +23,9 @@ class rps:
 
 
     def get_prediction(self):
+        cap = cv2.VideoCapture(0)
         labels = ['rock', 'paper', 'scissors', 'nothing']
+        print('Image capture starting...')
         start = time.time()
         while True:
             ret, frame = cap.read()
@@ -51,6 +52,7 @@ class rps:
                 prediction = 'none'
                 break
         cv2.destroyAllWindows()
+        cap.release()
         if type(prediction) == str:
             return prediction
         else:
@@ -131,7 +133,3 @@ class rps:
 if __name__ == '__main__':
     game = rps(score_limit = 3)
     game.play()
-    
-
-cap.release()
-cv2.destroyAllWindows()
