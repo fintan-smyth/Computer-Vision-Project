@@ -46,6 +46,7 @@ def get_user_choice():
         user_choice = get_prediction()
         if user_choice.lower() not in ['rock', 'paper', 'scissors']:
             print('\nSorry, a valid input was not detected. \n')
+            input('Press Enter to try again...')
         else:
             print(f'Your choice was: {user_choice}\n')
             break
