@@ -25,10 +25,6 @@ class rps:
 
     def get_prediction(self):
         labels = ['rock', 'paper', 'scissors', 'nothing']
-        countstart = False
-        count3 = False
-        count2 = False
-        count1 = False
         start = time.time()
         while True:
             ret, frame = cap.read()
@@ -36,27 +32,23 @@ class rps:
             image_np = np.array(resized_frame)
             normalized_image = (image_np.astype(np.float32) / 127.0) - 1
             data[0] = normalized_image
-            cv2.imshow('frame', frame)
             runtime = time.time() - start
-            if 1.5 < round(runtime, 2) and countstart == False:
-                print('\n\nYOUR   CHOICE\n\n     IS\n\nLOCKED    IN:\n\n')
-                countstart = True
-            elif 2.5 < round(runtime, 2) and count3 == False:
-                print('\n333333\n    33\n333333\n    33\n333333\n')
-                count3 = True
-            elif 3.5 < round(runtime, 2) and count2 == False:
-                print('\n222222\n    22\n222222\n22\n222222\n')
-                count2 = True
-            elif 4.5 < round(runtime, 2) and count1 == False:
-                print('\n1111\n  11\n  11\n  11\n111111\n')
-                count1 = True
-            elif round(runtime, 2) > 5.5:
+            if 1.5 < runtime < 2.4 :
+                cv2.putText(frame, "CHOICE LOCKED IN...", (90,390), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0,0,0), 3)
+            elif 3 < runtime < 3.5:
+                cv2.putText(frame, "3", (280,270), cv2.FONT_HERSHEY_SIMPLEX, 3, (0,0,0), 5)
+            elif 4 < runtime < 4.5:
+                cv2.putText(frame, "2", (280,270), cv2.FONT_HERSHEY_SIMPLEX, 3, (0,0,0), 5)
+            elif 5 < runtime < 5.5:
+                cv2.putText(frame, "1", (280,270), cv2.FONT_HERSHEY_SIMPLEX, 3, (0,0,0), 5)
+            elif runtime > 6:
+                cv2.putText(frame, "LOCKED!", (180,270), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,180,0), 5)
+            cv2.imshow('frame', frame)
+            if runtime > 6.1:
                 prediction = model.predict(data)
-                print('\nLOCKED!\n')
                 break
             if cv2.waitKey(1) & 0xFF == ord('q'):
-                print(runtime)
-                prediction = 'error'
+                prediction = 'none'
                 break
         cv2.destroyAllWindows()
         if type(prediction) == str:
