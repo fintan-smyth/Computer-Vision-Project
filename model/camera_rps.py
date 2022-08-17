@@ -103,7 +103,7 @@ class rps:
     def get_winner(self, computer_choice, user_choice):
         winner_matrix = np.array([  ['draw', 'user', 'comp'],
                                     ['comp', 'draw', 'user'],
-                                    ['user', 'comp', 'draw']])
+                                    ['user', 'comp', 'draw']    ])
         winner = winner_matrix[self.options.index(computer_choice),self.options.index(user_choice)]
         return winner
 
