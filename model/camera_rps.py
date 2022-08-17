@@ -45,7 +45,7 @@ class rps:
             elif runtime > 6:
                 cv2.putText(frame, "LOCKED!", (180,270), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,180,0), 5)
             cv2.imshow('frame', frame)
-            if runtime > 6.1:
+            if runtime > 6.2:
                 prediction = model.predict(data)
                 break
             if cv2.waitKey(1) & 0xFF == ord('q'):
