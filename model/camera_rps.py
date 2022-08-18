@@ -7,6 +7,42 @@ model = load_model('keras_model.h5')
 data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
 
 class rps:
+    '''
+    A game of Rock, Paper, Scissors that randomly generates a choice for the computer and receives the player's input through video capture.
+    It starts with a score limit that will cause the game to finish once it is reached.
+
+
+    Parameters:
+    -----------
+    score_limit: int
+        The number of wins required for the game to finish
+    
+
+    Attributes:
+    -----------
+    score_limit: int
+        Equal to the score_limit parameter
+    computer_score: int
+        The number of wins that the computer has achieved. Starts at 0.
+    user_score: int
+        The number of wins the player has achieved. Starts at 0
+    options: list
+        A list of the options you can choose to play in rock, paper, scissors.
+    
+
+    Methods:
+    ----------
+    get_prediction()
+        Determines the player's choice through video capture.
+    get_computer_choice()
+        Randomly generates the computer's choice.
+    get_user_choice()
+        Calls get_prediction until a valid choice is received and returns that choice.
+    get_winner(computer_choice, user_choice)
+        Compares the output of get_computer_choice and get_user_choice and returns who was the winner.
+    play()
+        Repeatedly runs rounds of rock, paper, scissors until the score limit is reached.
+    '''
 
     def __init__(self, score_limit=3):
         self.score_limit = score_limit
@@ -23,6 +59,14 @@ class rps:
 
 
     def get_prediction(self):
+
+        '''
+        Determines the player's choice through video capture.
+        
+        Once the capture starts, a countdown is shown to the player. 
+        When the countdown finishes the image shown at that moment is interpreted according to the model and a prediction is output.
+        '''
+
         cap = cv2.VideoCapture(0)
         labels = ['rock', 'paper', 'scissors', 'nothing']
         print('Image capture starting...')
@@ -60,11 +104,24 @@ class rps:
     
 
     def get_computer_choice(self):
+
+        '''
+        Randomly generates a choice for the computer.
+        '''
+
         computer_choice = random.choice(self.options)
         return computer_choice
 
     
     def get_user_choice(self):
+
+        '''
+        Calls get_prediction and determines if the predicted choice is valid.
+        
+        If it is not, the player is prompted to input make choice again.
+        Once a valid input is detected the choice is returned.
+        '''
+
         while True:
             user_choice = self.get_prediction()
             if user_choice.lower() not in self.options:
@@ -76,39 +133,41 @@ class rps:
         return user_choice
 
     
-    # def get_winner(self, computer_choice, user_choice):
-    #     if computer_choice == 'rock':
-    #         if user_choice == 'rock':
-    #             winner = 'draw'
-    #         elif user_choice == 'paper':
-    #             winner = 'user'
-    #         elif user_choice == 'scissors':
-    #             winner = 'comp'
-    #     elif computer_choice == 'paper':
-    #         if user_choice == 'rock':
-    #             winner = 'comp'
-    #         elif user_choice == 'paper':
-    #             winner = 'draw'
-    #         elif user_choice == 'scissors':
-    #             winner = 'user'
-    #     elif computer_choice == 'scissors':
-    #         if user_choice == 'rock':
-    #             winner = 'user'
-    #         elif user_choice == 'paper':
-    #             winner = 'comp'
-    #         elif user_choice == 'scissors':
-    #             winner = 'draw'
-    #     return winner
-
+    
     def get_winner(self, computer_choice, user_choice):
-        winner_matrix = np.array([  ['draw', 'user', 'comp'],
+
+        '''
+        Compares the output of get_computer_choice and get_user_choice and returns who was the winner.
+
+        The choices are compared using an array of possible outcomes, win_matrix. 
+        The first index corresponds to the index of computer_choice in the options list. 
+        The second index corresponds to the index of user_choice in the options list. 
+
+        Parameters:
+        -----------
+        computer_choice: str
+            The choice the computer is playing.
+        user_choice: str
+            The choice the user is playing.
+        '''
+
+        win_matrix = np.array([     ['draw', 'user', 'comp'],
                                     ['comp', 'draw', 'user'],
                                     ['user', 'comp', 'draw']    ])
-        winner = winner_matrix[self.options.index(computer_choice),self.options.index(user_choice)]
+
+        winner = win_matrix[self.options.index(computer_choice),self.options.index(user_choice)]
         return winner
 
     
     def play(self):
+
+        '''
+        Repeatedly runs rounds of rock, paper, scissors until the score limit is reached.
+        
+        When a round is played, if there is a winner a point is added to the winner's score.
+        Once the score limit is reached, a statement is output indicating the winner and the game finishes.
+        '''
+
         while True:
             start = input('Press Enter to make your choice...\n')
             if start == 'x':
