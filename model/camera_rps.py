@@ -15,13 +15,13 @@ class rps:
     Parameters:
     -----------
     score_limit: int
-        The number of wins required for the game to finish
+        The number of wins required to finish the game.
     
 
     Attributes:
     -----------
     score_limit: int
-        Equal to the score_limit parameter
+        The number of wins required to finish the game. Equal to the score_limit parameter
     computer_score: int
         The number of wins that the computer has achieved. Starts at 0.
     user_score: int
