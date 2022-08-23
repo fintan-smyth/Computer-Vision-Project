@@ -3,8 +3,6 @@ from keras.models import load_model
 import numpy as np
 import time
 import random
-model = load_model('keras_model.h5')
-data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
 
 class rps:
     '''
@@ -20,6 +18,10 @@ class rps:
 
     Attributes:
     -----------
+    model: keras model
+        The model that I have trained to differentiate between rock, paper, scissors signs.
+    data: numpy array
+        The array that will contain the visual data from the webcam to be interpreted by the model.
     score_limit: int
         The number of wins required to finish the game. Equal to the score_limit parameter
     computer_score: int
@@ -45,6 +47,8 @@ class rps:
     '''
 
     def __init__(self, score_limit=3):
+        self.model = load_model('keras_model.h5')
+        self.data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
         self.score_limit = score_limit
         self.computer_score = 0
         self.user_score = 0
@@ -76,7 +80,7 @@ class rps:
             resized_frame = cv2.resize(frame, (224, 224), interpolation = cv2.INTER_AREA)
             image_np = np.array(resized_frame)
             normalized_image = (image_np.astype(np.float32) / 127.0) - 1
-            data[0] = normalized_image
+            self.data[0] = normalized_image
             runtime = time.time() - start
             if 1.5 < runtime < 3 :
                 cv2.putText(frame, "CHOICE LOCKED IN...", (90,390), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0,0,0), 3)
@@ -90,7 +94,7 @@ class rps:
                 cv2.putText(frame, "LOCKED!", (180,270), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,180,0), 5)
             cv2.imshow('frame', frame)
             if runtime > 6.7:
-                prediction = model.predict(data)
+                prediction = self.model.predict(self.data)
                 break
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 prediction = 'none'
@@ -132,7 +136,6 @@ class rps:
                 break
         return user_choice
 
-    
     
     def get_winner(self, computer_choice, user_choice):
 
