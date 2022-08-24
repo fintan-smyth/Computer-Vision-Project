@@ -118,3 +118,225 @@ if __name__ == '__main__':
 - Finally, the `if __name__ == '__main__':` clause is added at the end so that when the file is run the `play` function is called.
 
 # Milestone 4
+
+The task for the final milestone was to integrate the model I have generated with my rock, paper, scissors game code so as to allow the player to make their choice by showing the appropriate sign to the webcam. To achieve this I ultimately settled on using a class based structure as suggested in the extension task for readability and clarity purposes.
+
+I started by creating a new file `camera_rps.py` in the folder `models` containing the generated computer vision model. Within this file I first imported all the necessary modules to run the code before initialising the class `rps`, which takes a single parameter `score_limit`:
+```python
+import cv2
+from keras.models import load_model
+import numpy as np
+import time
+import random
+
+class rps:
+    '''
+    A game of Rock, Paper, Scissors that randomly generates a choice for the computer and receives the player's input through video capture.
+    It starts with a score limit that will cause the game to finish once it is reached.
+    '''
+    def __init__(self, score_limit=3):
+        self.model = load_model('keras_model.h5')
+        self.data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
+        self.score_limit = score_limit
+        self.computer_score = 0
+        self.user_score = 0
+        self.options = ['rock', 'paper', 'scissors']
+        print('\n'*100 + '\nWelcome to my Rock, Paper, Scissors game.\n')
+        time.sleep(1)
+        if self.score_limit == 1:
+            print(f'The winner is the first to reach {self.score_limit} point.\n')
+        else:
+            print(f'The winner is the first to reach {self.score_limit} points.\n')
+        time.sleep(1)
+```
+
+- Within the `__init__` method I defined the following attributes:
+    - `model`: The computer vision model that I have generated.
+    - `data`: A numpy array that will be populated with visual data from the webcam to be interpreted by the model.
+    - `score_limit`: The number of wins required to finish the game, equal to the `score_limit` parameter.
+    - `computer_score` and `user_score`: Variables representing the number of wins of the two players, initialised at 0.
+    - `options`: A list containing the valid choices players can choose from.
+- The statement `Welcome to my Rock, Paper, Scissors game.` is then printed followed by a grammatically correct statement informing the player of the score limit.
+- Throughout the game, the `time.sleep()` function is called in between printed statements so as to improve readability of the console output.
+
+intro text image
+
+---
+
+The next method to define is the `get_prediction` method. The purpose of this method is to receive the player's input through the webcam, use the model to interpret it, and output the model's prediction of the player's choice. While waiting to receive the choice a feed from the webcam is displayed on the screen. A countdown is then shown in the display. Once the countdown is finished the player's choice is locked in and the image capture and feed closes. To achieve the image capture and interpretation I reused large portions of the code from `RPS-Template.py`.
+```python
+def get_prediction(self):
+
+        cap = cv2.VideoCapture(0)
+        labels = ['rock', 'paper', 'scissors', 'nothing']
+        print('Image capture starting...')
+        start = time.time()
+        while True:
+            ret, frame = cap.read()
+            resized_frame = cv2.resize(frame, (224, 224), interpolation = cv2.INTER_AREA)
+            image_np = np.array(resized_frame)
+            normalized_image = (image_np.astype(np.float32) / 127.0) - 1
+            self.data[0] = normalized_image
+            runtime = time.time() - start
+            if 1.5 < runtime < 3 :
+                cv2.putText(frame, "CHOICE LOCKED IN...", (90,390), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0,0,0), 3)
+            elif 3.5 < runtime < 4:
+                cv2.putText(frame, "3", (280,270), cv2.FONT_HERSHEY_SIMPLEX, 3, (0,0,0), 5)
+            elif 4.5 < runtime < 5:
+                cv2.putText(frame, "2", (280,270), cv2.FONT_HERSHEY_SIMPLEX, 3, (0,0,0), 5)
+            elif 5.5 < runtime < 6:
+                cv2.putText(frame, "1", (280,270), cv2.FONT_HERSHEY_SIMPLEX, 3, (0,0,0), 5)
+            elif runtime > 6.5:
+                cv2.putText(frame, "LOCKED!", (180,270), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,180,0), 5)
+            if runtime > 6.7:
+                prediction = self.model.predict(self.data)
+                break
+            cv2.imshow('frame', frame)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                prediction = [0,0,0,1]
+                break
+        cv2.destroyAllWindows()
+        cap.release()
+        return labels[np.argmax(prediction)]
+```
+- Within the body of the `get_prediction` method I first initialise two variables:
+    - `cap`: The video feed captured through the webcam.
+    - `labels`: A list of the labels used by the model in order.
+- The statement `Image capture starting...` is then printed in the console.
+- The `time.time` function is then used to start a timer since the image capture starts.
+- A while loop is then started to keep running until the player's selection is made.
+```python
+        while True:
+                    ret, frame = cap.read()
+                    resized_frame = cv2.resize(frame, (224, 224), interpolation = cv2.INTER_AREA)
+                    image_np = np.array(resized_frame)
+                    normalized_image = (image_np.astype(np.float32) / 127.0) - 1
+                    self.data[0] = normalized_image
+```
+- The first section of this loop is taken directly from `RPS-Template.py`.
+- It is used to convert the image received through video capture into the appropriate format to be interpreted by the model.
+- This converted image is then used to populate the `data` array.
+```python
+            runtime = time.time() - start
+            if 1.5 < runtime < 3 :
+                cv2.putText(frame, "CHOICE LOCKED IN...", (90,390), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0,0,0), 3)
+            elif 3.5 < runtime < 4:
+                cv2.putText(frame, "3", (280,270), cv2.FONT_HERSHEY_SIMPLEX, 3, (0,0,0), 5)
+            elif 4.5 < runtime < 5:
+                cv2.putText(frame, "2", (280,270), cv2.FONT_HERSHEY_SIMPLEX, 3, (0,0,0), 5)
+            elif 5.5 < runtime < 6:
+                cv2.putText(frame, "1", (280,270), cv2.FONT_HERSHEY_SIMPLEX, 3, (0,0,0), 5)
+            elif runtime > 6.5:
+                cv2.putText(frame, "LOCKED!", (180,270), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,180,0), 5)
+            cv2.imshow('frame', frame)
+            if runtime > 6.7:
+                prediction = self.model.predict(self.data)
+                break
+```
+- The next section of the loop is used to display a countdown on the feed and interpret the image once the countdown is finished.
+- The `time.time` function is used to determine the time since video capture started.
+- At timed intervals, the image from the webcam feed is modified to contain text indicating the progress of the countdown.
+- The `cv2.imshow` function is then called to show the modified webcam feed to the player.
+- Once the countdown is complete, the model is used to interpret the final image and the loop is exited.
+```python
+        cv2.destroyAllWindows()
+        cap.release()
+        return labels[np.argmax(prediction)]
+```
+- The final section of the `get_prediction` method is used to close all video capture and return the model's prediction. 
+- The `np.argmax` function is used to find the index of the prediction with the highest confidence.
+- This is then used to index the `labels` list and this value is returned.
+
+---
+
+The next methods to define are `get_computer_choice` and `get_user_choice`. These are simply slightly modified versions of the functions from `manual_rps.py`.
+```python
+    def get_computer_choice(self):
+        computer_choice = random.choice(self.options)
+        return computer_choice
+```
+- The `random.choice` function is used to select a random item from the `options` list.
+- This selection is then returned.
+```python
+    def get_user_choice(self):
+        while True:
+            user_choice = self.get_prediction()
+            if user_choice.lower() not in self.options:
+                print('\nSorry, a valid input was not detected. \n')
+                input('Press Enter to try again...')
+            else:
+                print(f'Your choice was: {user_choice}\n')
+                break
+        return user_choice
+```
+- A `while` loop is started to keep running as long as a valid choice has not been detected.
+- The `get_prediction` method is run and its output is assigned to `user_choice`.
+- If it is not in the `options` list (i.e the model's prediction is 'nothing') the statement `Sorry, a valid input was not detected.` is output and the player is prompted to try again.
+- Otherwise, the statement `Your choice was: {user_choice}` is output and the loop is exited.
+- The `get_user_choice` method then returns `user_choice`.
+---
+Next is the `get_winner` method. As in `manual_rps.py` its function is to compare the outputs of `get_computer_choice` and `get_user_choice` and return who the winner was or if it was a draw. For this I significantly streamlined the version used in `manual_rps.py` to make my code more readable and efficient.
+```python
+    def get_winner(self, computer_choice, user_choice):
+        
+        win_matrix = np.array([     ['draw', 'user', 'comp'],
+                                    ['comp', 'draw', 'user'],
+                                    ['user', 'comp', 'draw']    ])
+
+        winner = win_matrix[self.options.index(computer_choice),self.options.index(user_choice)]
+        return winner
+```
+- I first define the variable `win_matrix`. This is a 3x3 array containing the possible outcomes from all different match ups.
+- The y-axis is indexed by the index of `computer_choice` in the `options` list.
+- The x-axis is indexed by the index of `user_choice` in the `options` list.
+- The value at that position in `win_matrix` is then assigned to the variable `winner` and returned.
+---
+The final method to define is the `play` method. This is a version of the function from `manual_rps.py` expanded to include the code to repeatedly run rounds until the score limit is reached.
+```python
+def play(self):
+        while True:
+            start = input('Press Enter to make your choice...\n')
+            if start == 'x':
+                break    
+            computer_choice = self.get_computer_choice()
+            user_choice = self.get_user_choice()
+            winner = self.get_winner(computer_choice, user_choice)
+            time.sleep(1)
+            print(f'The computer chose: {computer_choice}\n')
+            time.sleep(1)
+            if winner == 'draw':
+                print('It was a draw.\n')
+            elif winner == 'comp':
+                print('The computer wins a point.\n')
+                self.computer_score += 1
+            elif winner == 'user':
+                print('The player wins a point.\n')
+                self.user_score += 1
+            print(f'Computer score: {self.computer_score}\nPlayer score: {self.user_score}\n')
+            time.sleep(1)
+            if self.computer_score == self.score_limit:
+                print('Bad luck, the computer won.\n')
+                break
+            if self.user_score == self.score_limit:
+                print('Congratulations! The player is the winner.\n')
+                break
+```
+- First a `while` loop is created to keep running until the game is finished.
+- The player is prompted to press 'Enter' to input their choice.
+- The `get_computer_choice`, `get_user_choice` and `get_winner` methods are then called in that order to determine the two choices and alculate the winner.
+- A statement is printed informing the player of the computer's choice.
+- If it was a draw, the statement `It was a draw.` is printed and no points are changed.
+- If the computer won, the statement `The computer wins a point` is printed and the `computer_score` attribute is increased by one.
+- If the player won, the statement `The player wins a point` is printed and the `user_score` attribute is increased by one.
+- A scoreboard is then printed to show the current score.
+- If the computer's score is then equal to the `score_limit` attribute, the statement `Bad luck, the computer won.` is printed and the loop is exited, finishing the game.
+- Otherwise, if the player's score is then equal to the `score_limit` attribute, the statement `Congratulations! The player is the winner.` is printed and the loop is exited, finishing the game.
+---
+Finally, the `if __name__ == '__main__':` clause is added add the end of the code so that a game is played when the file `camera_rps.py` is run.
+```python
+if __name__ == '__main__':
+    game = rps(score_limit = 3)
+    game.play()
+```
+- An instance of the `rps` class is called with a score limit of 3 and assigned to the variable `game`.
+- The `play` method is then called.

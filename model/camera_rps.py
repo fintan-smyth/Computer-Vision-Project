@@ -97,14 +97,11 @@ class rps:
                 prediction = self.model.predict(self.data)
                 break
             if cv2.waitKey(1) & 0xFF == ord('q'):
-                prediction = 'none'
+                prediction = [0,0,0,1]
                 break
         cv2.destroyAllWindows()
         cap.release()
-        if type(prediction) == str:
-            return prediction
-        else:
-            return labels[np.argmax(prediction)]
+        return labels[np.argmax(prediction)]
     
 
     def get_computer_choice(self):
