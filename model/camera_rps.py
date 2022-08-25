@@ -73,7 +73,7 @@ class rps:
 
         cap = cv2.VideoCapture(0)
         labels = ['rock', 'paper', 'scissors', 'nothing']
-        print('Image capture starting...')
+        print('Image capture starting...\n')
         start = time.time()
         while True:
             ret, frame = cap.read()
@@ -83,7 +83,7 @@ class rps:
             self.data[0] = normalized_image
             runtime = time.time() - start
             if 1.5 < runtime < 3 :
-                cv2.putText(frame, "CHOICE LOCKED IN...", (90,390), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0,0,0), 3)
+                cv2.putText(frame, "CHOICE LOCKED IN...", (90,390), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0,180,0), 3)
             elif 3.5 < runtime < 4:
                 cv2.putText(frame, "3", (280,270), cv2.FONT_HERSHEY_SIMPLEX, 3, (0,0,0), 5)
             elif 4.5 < runtime < 5:
@@ -127,9 +127,9 @@ class rps:
             user_choice = self.get_prediction()
             if user_choice.lower() not in self.options:
                 print('\nSorry, a valid input was not detected. \n')
-                input('Press Enter to try again...')
+                input('Press Enter to try again...\n')
             else:
-                print(f'Your choice was: {user_choice}\n')
+                print(f'\nYour choice was: {user_choice}\n')
                 break
         return user_choice
 
